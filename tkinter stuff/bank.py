@@ -7,13 +7,13 @@ from datetime import datetime
 user_db = {}
 transactions_db = {}
 
-csv_file = '/Users/mac/Documents/Bank/BanKing/user_db.csv'
-csv_file_tr = 'transaction_db.csv'
+csv_file = '/Users/mac/Documents/Bank/BanKing/tkinter stuff/user_db.csv'
+csv_file_tr = '/Users/mac/Documents/Bank/BanKing/tkinter stuff/transaction_db.csv'
 
 
 def save_users_to_csv():
     with open(csv_file, 'a', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=["Username", 'Full_name',"Password", 'ID', "email", "Type", "Balance"])
+        writer = csv.DictWriter(file, fieldnames=["Username", 'Full_name',"Password", 'ID', "email", "Type", "Balance"])  #extrasaction= 'ignore')
         #writer.writeheader()
         for username, user_data in user_db.items():
             writer.writerow({"Username": username, **user_data})
@@ -23,23 +23,27 @@ def load_users_from_csv():
     try:
         with open(csv_file, 'r') as file:
             reader = csv.DictReader(file)
-            if reader.fieldnames != ["Username", 'Full_name', "Password", "email", 'ID', 'Balance', "Type"]:
+            print(f"Field names: {reader.fieldnames}")  
+            if reader.fieldnames != ["Username", 'Full_name', "Password", "ID", 'email', 'Type', "Balance"]:
+                print("Field names do not match expected names.")  
                 return
             for row in reader:
                 user_db[row['Username']] = {
                     "Password": row["Password"],
                     "email": row["email"],
                     "ID": row["ID"],
-                    "acctype": row["Type"],
+                    "Type": row["Type"],
                     "Balance": float(row["Balance"]),
                     'Full_name': row['Full_name'],
                     'Username': row['Username']
                 }
-                
+            print(f"Loaded users: {user_db}")  
     except FileNotFoundError:
+        print("CSV file not found.")  
         return
-    except Exception :
-        return
+    except Exception as e:
+        print(f"An error occurred: {e}")  
+        
     
     
 def save_transactions_csv():
@@ -115,7 +119,8 @@ class Users:
                  full_name='John Doe',
                  email='johndoe@gmail.com', 
                  password=0000, 
-                 id= None, acctype='Normal', 
+                 id= None, 
+                 acctype='Normal', 
                  balance=0.00) -> None:
         
         self.username = username
@@ -163,19 +168,25 @@ class Users:
     def deposit(self, amount):
         if amount > 0:
             self.balance += amount
-            user_db[self.username]['balance'] = self.balance
-            track_transaction(sender=self, receiver=self, amount = amount, transaction_type= 'Deposit')
+            user_db[self.username]['Balance'] = self.balance
+            track_transaction(sender=self, 
+                              receiver=self,
+                              amount = amount,
+                              transaction_type= 'Deposit')
             return True
         return False
         
-        
-    def transfer(self, receiver_username, amount):
-        if receiver_username in user_db:
-            if amount > 0 and self.balance >= amount:
-                self.balance -= amount
-                user_db[self.username]['balance'] = self.balance
-                user_db[receiver_username]['balance'] += amount
-                track_transaction(sender=self, receiver= receiver_username, amount = amount, transaction_type= 'Transfer')
+    @classmethod    
+    def transfer(cls,sender_username, receiver_username, amount):
+        if receiver_username in user_db and sender_username in user_db:
+            if amount > 0 and user_db[sender_username]['Balance'] >= amount:
+                user_db[sender_username]['Balance'] -= amount
+                user_db[receiver_username]['Balance'] += amount
+                save_users_to_csv()
+                track_transaction(sender=sender_username, 
+                                  receiver= receiver_username,
+                                  amount = amount,
+                                  transaction_type= 'Transfer')
                 return True
         return False
         
