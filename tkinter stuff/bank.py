@@ -121,7 +121,7 @@ class Users:
                  password=0000, 
                  id= None, 
                  acctype='Normal', 
-                 balance=0.00) -> None:
+                 balance=50000.00) -> None:
         
         self.username = username
         self.full_name = full_name
@@ -145,7 +145,14 @@ class Users:
         }
         
         save_users_to_csv()
-    
+        
+    @classmethod
+    def signup(cls, username, full_name, password, email, acctype):
+        global user_db
+        if username in user_db:
+            return False
+        new_user = cls(username=username, full_name=full_name, email=email, password=password, acctype=acctype)
+        return True
 
         
     @classmethod

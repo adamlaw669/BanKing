@@ -22,7 +22,6 @@ def show_main_menu(root):
     frame = ttk.Frame(root, padding="20") 
     frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
     
-    
     root.grid_rowconfigure(0, weight=1)
     root.grid_columnconfigure(0, weight=1)
     frame.grid_rowconfigure(0, weight=1)
@@ -33,92 +32,91 @@ def show_main_menu(root):
     ttk.Button(frame,  text="Login", command=lambda: Login_window(root), style = 'TButton').grid(row =2, column = 0, columnspan=2, pady = 10, sticky=(tk.W, tk.E))
     ttk.Button(frame,  text="Exit", command=root.quit, style = 'TButton').grid(row =3, column = 0, columnspan=2, pady = 10, sticky=(tk.W, tk.E))
 
-class AnimatedDropdown:
-    def __init__(self, master, options, default_choice="Normal"):
-        self.master = master
-        self.options = options
-        self.is_open = False
-        self.selected_choice = default_choice
+ 
+class SignupWindow:
+    def __init__(self, root):
+        self.root = root  
+        self.is_open = False  # Track dropdown state
+        self.selected_choice = "Normal"  
+        
+        
+        frame = ttk.Frame(root, padding="10")
+        frame.grid(row=0, column=0, sticky=(tk.N, tk.S, tk.E, tk.W))
 
-        # Button to toggle dropdown
-        self.toggle_button = tk.Button(master, text="Choose account type", command=self.toggle_dropdown)
-        self.toggle_button.pack(pady=10)
+        root.columnconfigure(0, weight=1)
+        root.rowconfigure(0, weight=1)
 
-        # Frame to hold options
-        self.options_frame = tk.Frame(master)
+        ttk.Label(frame, text="Enter your full name:", style='TLabel').grid(row=0, column=0, pady=10, sticky=tk.W)
+        self.full_name_entry = ttk.Entry(frame)
+        self.full_name_entry.grid(row=0, column=1, pady=10, sticky=(tk.W, tk.E))
+
+        ttk.Label(frame, text="Enter your username:", style='TLabel').grid(row=1, column=0, pady=10, sticky=tk.W)
+        self.username_entry = ttk.Entry(frame)
+        self.username_entry.grid(row=1, column=1, pady=10, sticky=(tk.W, tk.E))
+
+        ttk.Label(frame, text="Enter your email:", style='TLabel').grid(row=2, column=0, pady=10, sticky=tk.W)
+        self.email_entry = ttk.Entry(frame)
+        self.email_entry.grid(row=2, column=1, pady=10, sticky=(tk.W, tk.E))
+
+        ttk.Label(frame, text="Enter a password:", style='TLabel').grid(row=3, column=0, pady=10, sticky=tk.W)
+        self.password_entry = ttk.Entry(frame, show="*")
+        self.password_entry.grid(row=3, column=1, pady=10, sticky=(tk.W, tk.E))
+
+        ttk.Label(frame, text="Confirm password:", style='TLabel').grid(row=4, column=0, pady=10, sticky=tk.W)
+        self.confirm_password_entry = ttk.Entry(frame, show="*")
+        self.confirm_password_entry.grid(row=4, column=1, pady=10, sticky=(tk.W, tk.E))
+
+        self.toggle_button = ttk.Button(frame, text="Choose account type", command=self.toggle_dropdown)
+        self.toggle_button.grid(row=5, column=0, columnspan=2, pady=10)
+
+        self.options_frame = ttk.Frame(frame)
         self.create_option_buttons()
 
-        # Label to display the selected option
-        self.selected_label = tk.Label(master, text=f"Selected account type: {self.selected_choice}")
-        self.selected_label.pack(pady=10)
+        self.selected_label = ttk.Label(frame, text=f"Selected account type: {self.selected_choice}")
+        self.selected_label.grid(row=6, column=0, columnspan=2, pady=10)
+
+        ttk.Button(frame, text="Signup", command=self.signup, style='TButton').grid(row=7, column=0, pady=10, sticky=(tk.W, tk.E))
+        ttk.Button(frame, text="Back", command=lambda: show_main_menu(root), style='TButton').grid(row=7, column=1, pady=10, sticky=(tk.W, tk.E))
+
+        root.bind('<Return>', self.signup)
 
     def create_option_buttons(self):
-        for option in self.options:
-            btn = tk.Button(self.options_frame, text=option, command=lambda opt=option: self.select_option(opt))
-            btn.pack(fill='x')
+        options = ["Normal", "Student"]
+        for option in options:
+            btn = ttk.Button(self.options_frame, text=option, command=lambda opt=option: self.select_option(opt))
+            btn.grid(sticky=(tk.W, tk.E))
 
     def toggle_dropdown(self):
         if not self.is_open:
-            self.options_frame.pack()  # Show the frame
+            self.options_frame.grid(row=8, column=0, columnspan=2, sticky=(tk.W, tk.E)) 
             self.is_open = True
         else:
-            self.options_frame.pack_forget()  # Hide the frame
+            self.options_frame.grid_forget()
             self.is_open = False
 
     def select_option(self, option):
         self.selected_choice = option
         self.selected_label.config(text=f"Selected account type: {self.selected_choice}")  # Update label
-        self.toggle_dropdown()  # Close dropdown after selection
+        self.toggle_dropdown()
 
-class SignupWindow:
-    def __init__(self, root):
-        """Show the signup window."""
-        clear_window(root)
-        
-        style = ttk.Style()
-        style.configure("TButton", font=('Arial', 12), padding=10)
-        style.configure("TLabel", font=('Arial', 16))
-        
-        frame = ttk.Frame(root, padding="20") 
-        frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        
-        root.grid_rowconfigure(0, weight=1)
-        root.grid_columnconfigure(0, weight=1)
-        frame.grid_rowconfigure(0, weight=1)
-        frame.grid_columnconfigure(0, weight=1)
-
-        self.root = root
-
-        ttk.Label(frame, text="Enter a username:", style='TLabel').grid(row=0, column=0, columnspan=2, pady=20)
-        self.username_entry = ttk.Entry(frame)
-        self.username_entry.grid(row=1, column=0, columnspan=2, pady=10, sticky=(tk.W, tk.E))
-
-        ttk.Label(frame, text="Enter a password:", style='TLabel').grid(row=2, column=0, columnspan=2, pady=10)
-        self.password_entry = ttk.Entry(frame, show="*")
-        self.password_entry.grid(row=3, column=0, columnspan=2, pady=10, sticky=(tk.W, tk.E))
-
-        ttk.Label(frame, text="Confirm password:", style='TLabel').grid(row=4, column=0, columnspan=2, pady=10)
-        self.confirm_password_entry = ttk.Entry(frame, show="*")
-        self.confirm_password_entry.grid(row=5, column=0, columnspan=2, pady=10, sticky=(tk.W, tk.E))
-
-        ttk.Button(frame, text="Signup", command=self.signup, style='TButton').grid(row=6, column=0, columnspan=2, pady=10, sticky=(tk.W, tk.E))
-        ttk.Button(frame, text="Back", command=lambda: show_main_menu(root), style='TButton').grid(row=7, column=0, columnspan=2, pady=10, sticky=(tk.W, tk.E))
-
-    def signup(self):
+    def signup(self, event=None):
         username = self.username_entry.get()
         password = self.password_entry.get()
         confirm_password = self.confirm_password_entry.get()
+        full_name = self.full_name_entry.get() 
+        email = self.email_entry.get()
+        acctype = self.selected_choice
 
         if password != confirm_password:
             messagebox.showerror("Error", "Passwords do not match!")
             return
 
-        if bank.Users.signup(username, password):
+        if bank.Users.signup(username, full_name, password, email, acctype):
             messagebox.showinfo("Success", "Signup successful!")
             show_main_menu(self.root)
         else:
             messagebox.showerror("Error", "Signup failed. Username may already be taken.")
-
+        
 
 
 class Login_window():
@@ -162,7 +160,7 @@ class Login_window():
 
         ttk.Button(frame, text="Login", command=login, style='TButton').grid(row = 4, column=0, pady=10)
         ttk.Button(frame, text="Back", command=lambda: show_main_menu(root), style='TButton').grid(row =5, column=0, pady=10)
-        
+        root.bind('<Return>', login)
         
     
     
@@ -274,7 +272,7 @@ def transfer(root, username):
 if __name__ == "__main__":
     root = ThemedTk(theme='arc')
     root.title("BanKing")
-    root.geometry("400x500")
+    root.geometry("400x600")
     
     bank.load_users_from_csv()
 
