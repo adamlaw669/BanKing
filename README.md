@@ -19,7 +19,7 @@ BanKing is a simple banking application built using Python and Tkinter. It allow
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/Banking.git
+    git clone https://github.com/adamlaw669/BanKing
     cd Banking
     ```
 
